@@ -27,6 +27,7 @@ void printDataHora(Data d)
 {
     printf("\n\tData-Hora: %02d/%02d/%4d | %2d:%02d", d.dia, d.mes, d.ano, d.hora, d.minuto);
 };
+
 void printEvento(Evento e)
 {
     printf("\nEvento");
@@ -69,28 +70,82 @@ Data atribuiData()
 
 int comparaDataHora(Data data1, Data data2)
 {
-    if (data1.ano != data2.ano)
+    // igual = 1;
+    // data1<data2 = 0
+    //  data1> data2 = 2
+    if (data1.ano == data2.ano)
     {
-        return 0;
+        if (data1.mes == data2.mes)
+        {
+            if (data1.dia == data2.dia)
+            {
+                if (data1.hora == data2.hora)
+                {
+                    if (data1.minuto == data2.minuto)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        if (data1.minuto < data2.minuto)
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            return 2;
+                        }
+                    }
+                }
+                else
+                {
+                    if (data1.hora < data2.hora)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 2;
+                    }
+                }
+            }
+            else
+            {
+                if (data1.dia < data2.dia)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 2;
+                }
+            }
+        }
+        else
+        {
+            if (data1.mes < data2.mes)
+            {
+                return 0;
+            }
+            else
+            {
+                return 2;
+            }
+        }
     }
-    if (data1.mes != data2.mes)
+    else
     {
-        return 0;
+        if (data1.ano < data2.ano)
+        {
+            return 0;
+        }
+        else
+        {
+            return 2;
+        }
     }
-    if (data1.dia != data2.dia)
-    {
-        return 0;
-    }
-    if (data1.hora != data2.hora)
-    {
-        return 0;
-    }
-    if (data1.minuto != data2.minuto)
-    {
-        return 0;
-    }
-    return 1;
 }
+
 int comparaDatas(Data data1, Data data2)
 {
     if (data1.ano != data2.ano)
@@ -202,6 +257,7 @@ void consultarData(listaEvento *first)
         printf("\n\tAgenda Fazia\n");
     }
 };
+
 void consultarDataHora(listaEvento *first)
 {
     if (first == NULL)
@@ -210,10 +266,7 @@ void consultarDataHora(listaEvento *first)
         return;
     }
     Data d;
-    printf("Informe a data do evento:");
-    scanf("%d/%d/%d", &d.dia, &d.mes, &d.ano);
-    printf("Informe a hora do evento:");
-    scanf("%d:%d", &d.hora, &d.minuto);
+    d = atribuiData();
     printf("Eventos:");
     listaEvento *i;
 
@@ -266,10 +319,7 @@ void alterar(listaEvento *first)
         return;
     }
     Data d;
-    printf("Informe a data do evento:");
-    scanf("%d/%d/%d", &d.dia, &d.mes, &d.ano);
-    printf("Informe a hora do evento:");
-    scanf("%d:%d", &d.hora, &d.minuto);
+    d = atribuiData();
     listaEvento *aux = NULL;
     for (listaEvento *i = first; i != NULL; i = i->next)
     {
@@ -328,10 +378,7 @@ listaEvento *excluir(listaEvento *first)
         return first;
     }
     Data d;
-    printf("Informe a data do evento:");
-    scanf("%d/%d/%d", &d.dia, &d.mes, &d.ano);
-    printf("Informe a hora do evento:");
-    scanf("%d:%d", &d.hora, &d.minuto);
+    d = atribuiData();
     printf("Eventos:");
     listaEvento *aux, *i;
     for (i = first; i != NULL; i = i->next)
@@ -363,9 +410,66 @@ listaEvento *excluir(listaEvento *first)
     return first;
 }
 
+no *inserirNo(no *root, no *aux)
+{
+    if (root == NULL)
+    {
+        return aux;
+    }
+    else
+    {
+        if (comparaDataHora(root->evento.dataEvento, aux->evento.dataEvento) == 2)
+            root->esquerda = inserirNo(root->esquerda, aux);
+        else
+            root->direita = inserirNo(root->direita, aux);
+    }
+    return root;
+}
+
+void imprimeEmOrdem(no *root)
+{
+    if (root != NULL)
+    {
+        imprimeEmOrdem(root->esquerda);
+        printEvento(root->evento);
+        imprimeEmOrdem(root->direita);
+    }
+}
+
+no *limparArvore(no *root)
+{
+    if (root != NULL)
+    {
+        limparArvore(root->esquerda);
+        limparArvore(root->direita);
+        printf("%d", root->evento.codigo);
+        free(root);
+    }
+    return NULL;
+}
+
 void listarPorData(listaEvento *first)
 {
+    no *root = NULL, *aux_r;
+    for (listaEvento *i = first; i != NULL; i = i->next)
+    {
+        aux_r = (no *)malloc(sizeof(no));
+        aux_r->direita = NULL;
+        aux_r->esquerda = NULL;
+        aux_r->evento = i->evento;
+        if (root == NULL)
+        {
+            root = aux_r;
+        }
+        else
+        {
+            root = inserirNo(root, aux_r);
+        }
+    }
+    imprimeEmOrdem(root);
+    root = limparArvore(root);
 }
+
 void listarPorCod(listaEvento *first)
 {
     printf("Eventos:");
@@ -375,6 +479,7 @@ void listarPorCod(listaEvento *first)
         printEvento(i->evento);
     }
 }
+
 void listarTodos(listaEvento *first)
 {
     if (first == NULL)
