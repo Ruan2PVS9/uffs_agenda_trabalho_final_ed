@@ -34,3 +34,51 @@
 //      BST (binary search tree)
 //      TAD (.h e .c)
 //      ordena os compromissos da agenda por data e hora.
+
+#include <stdio.h>
+// #include <stdlib.h>
+#include "agenda.h"
+int main()
+{
+    int ops, True = 1;
+    int count = 0;
+    listaEvento *first = NULL;
+    while (True)
+    {
+        printf("\no que deseja fazer:\n\t1-Incluir\n\t2-Consultar\n\t3-Alterar\n\t4-Excluir\n\t5-Listar todos\n\t6-Sair\n");
+        scanf("%d", &ops);
+        switch (ops)
+        {
+        case 6: // Sair do programa | limpar
+            /* code */
+            // goto EndWhile;
+            freeMemory(first);
+            True = 0;
+            break;
+        case 1: // Incluir
+            first = inserirEvento(first, &count);
+            break;
+        case 2: // Consultar
+            /* code */
+            consultar(first);
+            break;
+        case 3: // Alterar
+            /* code */
+            alterar(first);
+            break;
+        case 4: // Excluir
+            /* code */
+            first = excluir(first);
+            break;
+        case 5: // Listar todos
+            /* code */
+            listarTodos(first);
+            break;
+        default:
+            printf("opção invalida\n");
+            // break;
+        }
+    }
+
+    return 0;
+}
